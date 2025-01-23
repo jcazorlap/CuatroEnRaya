@@ -117,4 +117,61 @@ public class Tablero {
             } else {
                 consecutivas = 0;
             }
-            fila
+            filaInicial++;
+            columnaInicial++;
+        }
+        return false;
+    }
+
+    private boolean comprobarDiagonalNO(int fila, int columna, Ficha ficha) {
+        int desplazamiento = menor(fila, COLUMNAS - 1 - columna);
+        int filaInicial = fila - desplazamiento;
+        int columnaInicial = columna + desplazamiento;
+        int consecutivas = 0;
+
+        while (filaInicial < FILAS && columnaInicial >= 0) {
+            if (tablero[filaInicial][columnaInicial].getFicha() == ficha) {
+                consecutivas++;
+                if (objetivoAlcanzado(consecutivas)) {
+                    return true;
+                }
+            } else {
+                consecutivas = 0;
+            }
+            filaInicial++;
+            columnaInicial--;
+        }
+        return false;
+    }
+
+    public boolean comprobarTirada(int fila, int columna, Ficha ficha) {
+        return comprobarHorizontal(fila, ficha) ||
+                comprobarVertical(columna, ficha) ||
+                comprobarDiagonalNE(fila, columna, ficha) ||
+                comprobarDiagonalNO(fila, columna, ficha);
+    }
+
+    public boolean introducirFicha(int columna, Ficha ficha) {
+        comprobarFicha(ficha);
+        comprobarColumna(columna);
+        if (columnaLlena(columna)) {
+            throw new IllegalArgumentException("La columna está llena.");
+        }
+        int fila = getPrimeraFilaVacia(columna);
+        tablero[fila][columna].setFicha(ficha);
+        return comprobarTirada(fila, columna, ficha);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int fila = 0; fila < FILAS; fila++) {
+            for (int columna = 0; columna < COLUMNAS; columna++) {
+                Ficha ficha = tablero[fila][columna].getFicha();
+                sb.append(ficha == null ? "[ ]" : "[" + ficha + "]");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+}
